@@ -69,3 +69,8 @@ CONFERENCES: dict[str, dict] = {
 
 # CRG test: add a comment
 
+
+def get_conference_count() -> int:
+    """Return total number of registered conferences."""
+    return len(CONFERENCES)
+

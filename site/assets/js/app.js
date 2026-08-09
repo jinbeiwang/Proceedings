@@ -2,8 +2,8 @@
    加载 JSON 数据 -> 构建 Lunr 索引 -> 筛选/搜索/排序/分页渲染
    纯客户端,无服务端依赖。
 
-   v5 — "Refined Archive" redesign
-   Warm archival gold on deep ink. Editorial serif precision.
+   v6 — "Scholar" redesign
+   Semantic Scholar 的学术清爽 + Hugging Face Papers 的 Trending 信息流。
    保留全部核心功能:骨架屏 + 数字递增 + 暗色/亮色主题 + 筛选级联联动。 */
 
 (() => {
@@ -12,6 +12,8 @@
   const PER_PAGE = 30;
   const $ = (s) => document.querySelector(s);
   const THEME_KEY = "clinproc-theme";
+  // 仓库推送到 GitHub 后在此填入地址,导航栏会自动显示 GitHub 入口
+  const REPO_URL = "";
 
   // ---- 状态 ----
   const state = {
@@ -87,6 +89,7 @@
       state.confs = cRes.ok ? await cRes.json() : [];
       buildIndex();
       renderStats();
+      renderTrending();
       renderConfGrid();
       renderFilters();
       state.ready = true;
@@ -108,6 +111,7 @@
     state.idx = lunr(function () {
       this.ref("id");
       this.field("title", { boost: 4 });
+      this.field("authors", { boost: 3 });
       this.field("section_name", { boost: 2 });
       this.field("conference_name", { boost: 2 });
       this.field("paper_code", { boost: 1 });
@@ -116,6 +120,7 @@
         this.add({
           id: p.id,
           title: p.title || "",
+          authors: (p.authors || []).join("; "),
           section_name: p.section_name || "",
           conference_name: p.conference_name || "",
           paper_code: p.paper_code || "",
@@ -137,6 +142,35 @@
     // 最近更新:取最大 added_at 的日期部分
     const latest = ps.map((p) => p.added_at || "").filter(Boolean).sort().pop();
     $("#stat-updated").textContent = latest ? latest.slice(0, 10) : "—";
+  }
+
+  // ---- 最新收录(HF Papers 风格信息流) ----
+  function renderTrending() {
+    const box = $("#trending-list");
+    if (!box) return;
+    // 按抓取时间取最新 6 篇;14 天内入库的打 NEW 标
+    const now = Date.now();
+    const latest = [...state.papers]
+      .filter((p) => p.added_at)
+      .sort((a, b) => b.added_at.localeCompare(a.added_at))
+      .slice(0, 6);
+    if (!latest.length) { box.closest(".trending").style.display = "none"; return; }
+    $("#trending-sub").textContent =
+      `最近更新 ${latest[0].added_at.slice(0, 10)}`;
+    box.innerHTML = latest.map((p, i) => {
+      const isNew = now - Date.parse(p.added_at) < 14 * 864e5;
+      const href = p.pdf_url || p.source_url || "#";
+      return `<a class="trend-card" href="${esc(href)}" target="_blank" rel="noopener">
+        <span class="trend-rank">${String(i + 1).padStart(2, "0")}</span>
+        <span class="trend-conf">${esc(p.conference_name)} ${p.year || ""}</span>
+        <span class="trend-title">${esc(p.title)}</span>
+        <span class="trend-meta">
+          ${isNew ? `<span class="trend-new">NEW</span>` : ""}
+          ${p.authors && p.authors.length ? esc(p.authors[0]) + (p.authors.length > 1 ? " 等" : "") : ""}
+          ${p.pdf_url ? "· PDF" : ""}
+        </span>
+      </a>`;
+    }).join("");
   }
 
   // ---- 会议卡片 ----
@@ -380,18 +414,23 @@
     }
 
     const pdfIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v5h5M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg>`;
-    box.innerHTML = slice.map((p, i) => `
-      <a class="paper-card" href="${esc(p.pdf_url)}" target="_blank" rel="noopener" style="animation-delay:${Math.min(i * 25, 300)}ms">
+    box.innerHTML = slice.map((p, i) => {
+      const href = p.pdf_url || p.source_url || "#";
+      const tldr = (p.abstract || "").replace(/\s+/g, " ").trim();
+      return `
+      <a class="paper-card" href="${esc(href)}" target="_blank" rel="noopener" style="animation-delay:${Math.min(i * 25, 300)}ms">
         <div class="paper-title">${esc(p.title)}</div>
         ${p.authors && p.authors.length ? `<div class="paper-authors">${esc(p.authors.join("; "))}</div>` : ""}
+        ${tldr ? `<div class="paper-tldr"><b>摘要</b>${esc(tldr.slice(0, 220))}${tldr.length > 220 ? "…" : ""}</div>` : ""}
         <div class="paper-meta">
           <span class="badge badge-conf">${esc(p.conference_name)}</span>
           ${p.section_name ? `<span class="badge badge-section">${esc(p.section_name)}</span>` : ""}
           ${p.year ? `<span class="badge badge-year">${p.year}</span>` : ""}
           <span class="paper-code">${esc(p.paper_code)}</span>
-          <span class="paper-pdf">${pdfIcon}PDF</span>
+          <span class="paper-pdf ${p.pdf_url ? "" : "nopdf"}">${pdfIcon}${p.pdf_url ? "PDF" : "原文页"}</span>
         </div>
-      </a>`).join("");
+      </a>`;
+    }).join("");
 
     // 分页
     const pager = $("#pager");
@@ -517,6 +556,14 @@
   }
 
   // ---- 初始化 ----
+  function initGitHubLink() {
+    const link = $("#github-link");
+    if (link && REPO_URL) {
+      link.href = REPO_URL;
+      link.hidden = false;
+    }
+  }
+
   initTheme();
-  document.addEventListener("DOMContentLoaded", () => { bind(); load(); });
+  document.addEventListener("DOMContentLoaded", () => { bind(); load(); initGitHubLink(); });
 })();

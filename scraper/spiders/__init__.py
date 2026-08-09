@@ -5,6 +5,9 @@ from .sasgf import SASGlobalForumSpider
 from .rpharma import RPharmaSpider
 from .wayback_pharmasug import WaybackPharmaSUGSpider
 from .pharmasug_cn import PharmaSUGChinaSpider
+from .pharmasug_jp import PharmaSUGJapanSpider
+from .mwsug import MWSUGSpider
+from .sasinnovate import SASInnovateSpider
 
 # 会议代码 -> spider 类。main.py 据此调度。
 SPIDERS = {
@@ -18,4 +21,7 @@ SPIDERS = {
     "sgf": SASGlobalForumSpider,
     "sugi": SASGlobalForumSpider,
     "r-pharma": RPharmaSpider,
+    "mwsug": MWSUGSpider,
+    "sas-innovate": SASInnovateSpider,
+    "pharmasug-jp": PharmaSUGJapanSpider,
 }

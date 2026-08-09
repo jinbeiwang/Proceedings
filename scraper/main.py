@@ -16,6 +16,7 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import re
 import sys
 from collections import defaultdict
 from pathlib import Path
@@ -50,15 +51,27 @@ def load_existing(path: Path) -> dict[str, dict]:
 
 
 def merge(old: dict[str, dict], new_papers: list) -> list[dict]:
-    """合并: 新论文加入;已有论文保留旧 added_at,其余字段以新抓取为准。"""
+    """合并: 新论文加入;已有论文保留旧 added_at,其余字段以新抓取为准。
+
+    降级保护: 新记录是占位标题(仅编号,无真实标题)而旧记录有真实标题时,
+    保留旧记录——避免 Wayback 不可达时重跑把已有富数据冲成占位符。
+    """
     merged: dict[str, dict] = dict(old)
     for p in new_papers:
         d = p.to_dict() if hasattr(p, "to_dict") else dict(p)
         pid = d["id"]
         if pid in merged:
-            d["added_at"] = merged[pid].get("added_at", d["added_at"])
+            old_rec = merged[pid]
+            if _is_placeholder_title(d.get("title", "")) and not _is_placeholder_title(old_rec.get("title", "")):
+                continue
+            d["added_at"] = old_rec.get("added_at", d["added_at"])
         merged[pid] = d
     return list(merged.values())
+
+
+def _is_placeholder_title(title: str) -> bool:
+    """判断标题是否为 CDX 兜底生成的占位符(如 'Paper 123-2010' / 'SUGI 1998 Paper 45')。"""
+    return bool(re.match(r"^(Paper\s+\d|SUGI\s+\d{4}\s+Paper\s)", title or ""))
 
 
 def build_conferences_meta(papers: list[dict]) -> list[dict]:

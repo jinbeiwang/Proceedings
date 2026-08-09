@@ -93,8 +93,8 @@ class PharmaSUGChinaSpider(BaseSpider):
     base_url = "https://www.lexjansen.com"
     rate_limit = 1.0
 
-    # 尝试的年份范围
-    YEARS = list(range(2012, 2026))
+    # 尝试的年份范围(2024/2025 直连源缺失,靠 Wayback/lexjansen 兜底,CI 环境可达)
+    YEARS = list(range(2012, 2027))
 
     def collect(self) -> list[Paper]:
         papers: list[Paper] = []

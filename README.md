@@ -25,10 +25,17 @@ proceedings/
 │   ├── main.py               # 主入口:调度 spider、汇总去重、输出 JSON
 │   ├── models.py             # Paper 数据模型 + 会议注册表
 │   ├── base.py               # BaseSpider:HTTP/缓存/限速/解析基类
+│   ├── repair_data.py        # 数据修复工具:Wayback 链接直链化 + PDF 标题/作者回填(幂等)
 │   ├── spiders/
-│   │   ├── pharmasug.py      # PharmaSUG(已实现,验证可用)
-│   │   ├── phuse.py          # PHUSE(骨架,待补)
-│   │   └── sasgf.py          # SAS Global Forum / SUGI(骨架,待补)
+│   │   ├── pharmasug.py      # PharmaSUG US(已实现,验证可用)
+│   │   ├── pharmasug_cn.py   # PharmaSUG China(已实现)
+│   │   ├── wayback_pharmasug.py  # PharmaSUG 旧年份(经 Wayback Machine 恢复)
+│   │   ├── phuse.py          # PHUSE EU/US/APAC/CSS(已实现)
+│   │   ├── sasgf.py          # SAS Global Forum / SUGI(已实现,support.sas.com 归档)
+│   │   ├── rpharma.py        # R/Pharma(已实现)
+│   │   ├── mwsug.py          # MWSUG(已实现,2025 起)
+│   │   ├── sasinnovate.py    # SAS Innovate(已实现,SGF 继任会议,GitHub 托管)
+│   │   └── pharmasug_jp.py   # PharmaSUG Japan(已实现,2023/2025 直连)
 │   └── requirements.txt
 ├── site/                     # 静态网站
 │   ├── index.html
@@ -61,6 +68,20 @@ python main.py -c pharmasug-us --years 2025,2026
 ```
 
 抓取结果写入 `site/data/papers.json` 与 `site/data/conferences.json`。HTML 缓存在 `scraper/.cache/`(加速重跑,已 gitignore)。
+
+### 数据修复(一次性工具,幂等可重跑)
+
+`repair_data.py` 用于修复历史数据中的两类问题:
+
+```powershell
+cd scraper
+python repair_data.py --workers 8   # 可选 --dry-run / --limit N
+```
+
+1. **Wayback 链接直链化**:把 `web.archive.org/web/...` 形式的 pdf_url 换回会议官网直链(support.sas.com 镜像 / pharmasug.org),逐个 HEAD 探活后才写入;
+2. **标题/作者回填**:对 `Paper NN` / `SUGI xxxx Paper NN` 这类占位标题,下载 PDF 首页提取真实标题与作者。
+
+写回前自动备份 `papers.json.repair-bak`;已修复的记录重跑时直接跳过。
 
 ### 2. 本地预览站点
 
@@ -107,14 +128,26 @@ python -m http.server 8765
 
 ## 当前覆盖情况
 
+约 **15,500 篇**,年份 1976–2026:
+
 | 会议 | 状态 | 说明 |
 |---|---|---|
-| PharmaSUG US | ✅ 已实现 | 2022–2026 已抓取验证;旧年份(2011–2021)官网索引已下线,需 Wayback 恢复 |
-| PHUSE / FDA-CSS | 🔲 骨架 | 待核实 phuse-events.org 结构后实现 |
-| SAS Global Forum / SUGI | 🔲 骨架 | 待核实 support.sas.com 归档后实现 |
-| 其余 20 个会议 | 🔲 已注册 | 待逐步补 spider |
+| SUGI(1976–2006) | ✅ 已实现 | support.sas.com 归档,约 5,700 篇 |
+| PharmaSUG US | ✅ 已实现 | 新年份官网直抓;旧年份(1997–2021)经 Wayback Machine 恢复 |
+| PharmaSUG China | ✅ 已实现 | 2024/2025 官网未发布 proceedings,待 Wayback/第三方源补齐 |
+| PharmaSUG Japan | ✅ 已实现 | pharmasug.org/proceedings/japan{year}/ 直连(2023/2025);其余年份反爬 403,走 Wayback |
+| SAS Global Forum(2007–2021) | ✅ 已实现 | support.sas.com 归档;SGF 自 2022 起停办,继任会议为 SAS Innovate |
+| SAS Innovate(2025–) | ✅ 已实现 | 每场 session 一个 GitHub 仓库,收录标题/摘要/讲者/PDF;支持 GITHUB_TOKEN 环境变量提额 |
+| PHUSE EU / US / APAC / CSS | ✅ 已实现 | |
+| R/Pharma | ✅ 已实现 | |
+| MWSUG | ✅ 已实现 | 现站仅托管 2025 起;无 PDF 直链,收录标题/作者/摘要 |
+| 其余 ~13 个会议 | 🔲 已注册 | 见 `models.py` CONFERENCES,待逐步补 spider |
 
-> **关于旧年份**:PharmaSUG 新站仅托管近几年在线 proceedings 索引,2011–2021 的索引页会重定向到最新届。这正是 Lex Jansen 当年补齐的缺口。恢复旧年份的路径:通过 [Wayback Machine](https://web.archive.org/) 的 CDX API 抓取 lexjansen.com 旧索引作为种子,或抓取旧 PharmaSUG 站点快照。框架已支持,只需新增一个 Wayback spider。
+> **新会议源勘察结论(2026-08)**:posit::conf 与 SAS Explore 均无公开 PDF proceedings(以演讲/视频为主),不适合本索引模式;区域 SUG 中 NESUG 站点不可达、SCSUG 有反爬拦截、SESUG/WUSS 现站无历年 proceedings 归档——如需补齐均须走 Wayback Machine。
+
+> **PharmaSUG China/Japan 源勘察(2026-08)**:区域会议的 proceedings 分散在不同路径、无统一导航入口。China 官网 pharmasug.com.cn 为 Vue SPA,后端 API 需鉴权(403),pharmasug.org 无 china2024/2025 页;2025 年会议页在 bagevent.com,议程无结构化论文列表。Japan 仅 pharmasug.org/proceedings/japan{year}/ 一条路径,部分年份对非浏览器 UA 返回 403。Lex Jansen 站聚合了部分 CN/JP 论文但本地 DNS 不可达——上述缺口需在 CI 环境经 Wayback Machine 补齐。
+
+> **已知残留**:少量旧论文(主要为 SUGI/SGF 大体积 PDF)标题仍为占位符——本地网络对大文件下载存在截断,可在 GitHub Actions(CI)环境重跑 `repair_data.py` 补齐;另有约 350 条 lexjansen.com 链接在部分地区不可达,保留 Wayback 链接兜底。
 
 ## 合规说明
 
@@ -125,7 +158,7 @@ python -m http.server 8765
 ## 技术栈
 
 - 抓取:Python 3 + httpx + BeautifulSoup4
-- 站点:原生 HTML/CSS/JS(无构建步骤)
+- 站点:原生 HTML/CSS/JS(无构建步骤),v6 "Scholar" 设计(参考 Semantic Scholar + Hugging Face Papers)
 - 检索:Lunr.js(客户端全文索引)
 - 自动化:GitHub Actions(cron + workflow_dispatch)
 - 托管:GitHub Pages

@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark">
+<html lang="zh-CN" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ClinProc · 临床编程会议论文索引 — Refined Archive</title>
-  <meta name="description" content="汇总 PharmaSUG、PHUSE、SAS Global Forum、R/Pharma 等临床编程会议论文,可检索、可分类浏览。Refined Archive 设计。">
+  <title>ClinProc · 临床编程会议论文索引</title>
+  <meta name="description" content="汇总 PharmaSUG、PHUSE、SAS Global Forum、SAS Innovate、R/Pharma 等临床编程会议论文,可检索、可分类浏览。">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400;1,6..72,500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/style.css">
   <script src="https://cdn.jsdelivr.net/npm/lunr@2.3.9/lunr.min.js" defer></script>
   <script src="assets/js/app.js" defer></script>
@@ -26,7 +26,7 @@
       <nav class="topnav">
         <a href="#conferences" class="nav-link">会议</a>
         <a href="#about" class="nav-link">关于</a>
-        <a href="https://github.com/" target="_blank" rel="noopener" class="nav-link nav-gh">GitHub</a>
+        <a id="github-link" href="https://github.com/" target="_blank" rel="noopener" class="nav-link nav-gh" hidden>GitHub</a>
         <button id="theme-toggle" class="theme-toggle" aria-label="切换主题">
           <svg class="icon-sun" viewBox="0 0 24 24" width="16" height="16"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><line x1="12" y1="2" x2="12" y2="4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="20" x2="12" y2="22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="4.93" y1="4.93" x2="6.34" y2="6.34" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="17.66" y1="17.66" x2="19.07" y2="19.07" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="2" y1="12" x2="4" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="20" y1="12" x2="22" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="4.93" y1="19.07" x2="6.34" y2="17.66" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="17.66" y1="6.34" x2="19.07" y2="4.93" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
           <svg class="icon-moon" viewBox="0 0 24 24" width="16" height="16"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
@@ -41,9 +41,8 @@
       <h1 class="hero-title">临床编程会议论文<br><span class="hero-accent">一站检索</span></h1>
       <p class="hero-sub">汇集 PharmaSUG、PHUSE、SAS Global Forum、R/Pharma 等行业会议论文,按会议 · 年份 · 主题分类,全文检索。</p>
       <div class="search-box">
-        <span class="search-prompt" aria-hidden="true">›</span>
         <svg class="search-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M21 21l-5-5m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-        <input id="search" type="search" placeholder="搜索标题、主题、会议编号…  如 ADaM、macro、TLF、validation" autocomplete="off" aria-label="搜索论文">
+        <input id="search" type="search" placeholder="搜索标题、作者、主题、会议编号…  如 ADaM、macro、TLF、validation" autocomplete="off" aria-label="搜索论文">
         <kbd class="search-kbd" aria-hidden="true">/</kbd>
         <button id="search-clear" class="search-clear" hidden>&times;</button>
       </div>
@@ -56,6 +55,19 @@
         <div class="stat-sep"></div>
         <div class="stat-item"><b id="stat-updated">—</b><span>最近更新</span></div>
       </div>
+    </div>
+  </section>
+
+  <section class="trending">
+    <div class="wrap">
+      <div class="trending-head">
+        <div class="trending-title">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M13.5 2c.6 3.2-.6 5.1-2 6.7-1.5 1.7-2.5 3.1-2.5 5.3a5 5 0 0 0 10 0c0-1-.3-1.9-.7-2.7-.6 1-1.5 1.7-2.3 1.9.6-2.8-.2-6.5-2.5-8.9-.8.9-1.4 1.9-1.7 3C10.9 5.5 12 3.7 13.5 2zM6 14a6 6 0 0 0 12 0" opacity=".9"/></svg>
+          最新收录
+        </div>
+        <span class="trending-sub" id="trending-sub"></span>
+      </div>
+      <div id="trending-list" class="trending-list"></div>
     </div>
   </section>
 
@@ -120,7 +132,7 @@
       <div class="section-marker"><span class="marker-num">03</span> ABOUT</div>
       <h2 class="section-title">关于本项目</h2>
       <div class="about-body">
-        <p>本项目是一个<strong>纯静态、零服务器</strong>的会议论文索引站,灵感来自已离线的 Lex Jansen 索引站,并参考了 clinyun.com/ppi 与 clinstandards.org 的资源组织方式。</p>
+        <p>本项目是一个<strong>纯静态、零服务器</strong>的会议论文索引站,灵感来自已离线的 Lex Jansen 索引站,并参考了 clinyun.com/ppi 与 clinstandards.org 的资源组织方式;界面设计参考 Semantic Scholar 与 Hugging Face Papers。</p>
         <p><strong>动态更新机制:</strong>站点本身是静态 HTML,通过 GitHub Actions 定时(每月 + 会议季后)运行 Python 抓取脚本,从各会议官网获取最新论文,更新数据后自动重新部署到 GitHub Pages。无需任何服务器或数据库。</p>
         <p><strong>版权说明:</strong>本站仅做索引与链接,论文 PDF 版权属于各会议与作者,点击直达官方原始 PDF。如需镜像或抓取会员专有内容,请先获得授权。</p>
       </div>

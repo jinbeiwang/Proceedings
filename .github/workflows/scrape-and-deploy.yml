@@ -55,6 +55,9 @@ jobs:
         env:
           CONF_INPUT: ${{ github.event.inputs.conferences }}
           YEAR_INPUT: ${{ github.event.inputs.years }}
+          # sas-innovate spider 调 GitHub API 抓仓库,匿名限流仅 60 次/小时;
+          # 注入 Actions 自带 token 提额到 5000 次/小时
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           ARGS=""
           [ -n "$CONF_INPUT" ] && ARGS="$ARGS -c $CONF_INPUT"

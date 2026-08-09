@@ -62,12 +62,10 @@ CONFERENCES: dict[str, dict] = {
     "psi":             {"name": "PSI",                   "region": "EU",    "lang": "en", "start": 2024},
     "posit-conf":      {"name": "posit::conf",           "region": "Global","lang": "en", "start": 2023},
     "sas-explore":     {"name": "SAS Explore",           "region": "Global","lang": "en", "start": 2022},
-    "sas-innovate":    {"name": "SAS Innovate",          "region": "Global","lang": "en", "start": 2024},
+    "sas-innovate":    {"name": "SAS Innovate",          "region": "Global","lang": "en", "start": 2025},
     "pharmarug-cn":    {"name": "PharmaRUG China",       "region": "CN",    "lang": "zh", "start": 2023},
     "views":           {"name": "VIEWS",                 "region": "EU",    "lang": "en", "start": 2001},
 }
-
-# CRG test: add a comment
 
 
 def get_conference_count() -> int:

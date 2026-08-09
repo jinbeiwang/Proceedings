@@ -45,6 +45,8 @@ class BaseSpider:
             headers=HEADERS, timeout=30.0, follow_redirects=True
         )
         self._last_request = 0.0
+        # CDX 入口被判定不可达后(如本地网络屏蔽),后续 Wayback 调用直接短路
+        self._cdx_unreachable = False
 
     # ---- HTTP 辅助 ----
     def _throttle(self) -> None:
@@ -95,53 +97,84 @@ class BaseSpider:
         return urljoin(self.base_url, url)
 
     # ---- Wayback Machine 辅助 ----
+    # CDX API 候选入口: 部分网络环境下 http 端口被阻断, https 可用,逐个尝试。
+    CDX_ENDPOINTS = (
+        "https://web.archive.org/cdx/search/cdx",
+        "http://web.archive.org/cdx/search/cdx",
+    )
+
+    def _cdx_get(self, params: dict, timeout: float = 45.0):
+        """向 CDX API 发起请求,自动在 https/http 入口间回退。
+
+        返回 httpx.Response;所有入口连接失败(如主机被屏蔽)时返回 None。
+        """
+        if self._cdx_unreachable:
+            return None
+        for ep in self.CDX_ENDPOINTS:
+            try:
+                return self._client.get(ep, params=params, timeout=timeout)
+            except httpx.HTTPError:
+                continue
+        self._cdx_unreachable = True
+        return None
+
     def fetch_wayback(self, url: str, timestamp: str = "") -> str:
         """从 Wayback Machine 获取归档页面 HTML(原始内容,无 Wayback 改写)。"""
         if not timestamp:
             # CDX 查询最近成功的快照(带重试)
             for attempt in range(3):
-                cdx_url = (
-                    f"http://web.archive.org/cdx/search/cdx?url={url}"
-                    f"&output=json&limit=1&filter=statuscode:200"
+                resp = self._cdx_get(
+                    {"url": url, "output": "json", "limit": 1,
+                     "filter": "statuscode:200"},
+                    timeout=20.0,
                 )
-                try:
-                    resp = self._client.get(cdx_url, timeout=20.0)
-                    if resp.status_code == 200:
-                        data = resp.json()
-                        if len(data) > 1:
-                            timestamp = data[1][1]
-                            break
-                    elif resp.status_code in (503, 502, 429):
-                        time.sleep(min(3 * (2 ** attempt), 15))
-                        continue
-                    else:
+                if resp is None:
+                    # CDX 不可达(如本地网络屏蔽),重试无意义
+                    log.warning("[%s] CDX 入口不可达,本次运行跳过 Wayback 依赖步骤", self.conference)
+                    return ""
+                if resp.status_code == 200:
+                    data = resp.json()
+                    if len(data) > 1:
+                        timestamp = data[1][1]
                         break
-                except Exception:
-                    if attempt < 2:
-                        time.sleep(min(3 * (2 ** attempt), 15))
+                elif resp.status_code in (503, 502, 429):
+                    time.sleep(min(3 * (2 ** attempt), 15))
+                    continue
+                else:
+                    break
             if not timestamp:
                 return ""
         wayback_url = f"https://web.archive.org/web/{timestamp}id_/{url}"
         return self.fetch_html(wayback_url)
 
-    def wayback_cdx_search(self, url_pattern: str, limit: int = 5000) -> list[dict]:
+    def wayback_cdx_search(self, url_pattern: str, limit: int = 5000,
+                           require_status200: bool = True) -> list[dict]:
         """通过 CDX API 搜索 Wayback Machine 归档的 URL 列表。
 
         带指数退避重试(最多 5 次),应对 Wayback 频繁的 503/超时。
+        require_status200=False 时不过滤状态码——PDF 快照的 statuscode
+        在 CDX 中可能为空或 "-",强过滤会漏掉真实存在的归档。
         """
         import json as _json
 
-        cdx_url = (
-            f"http://web.archive.org/cdx/search/cdx?"
-            f"url={url_pattern}&output=json"
-            f"&fl=timestamp,original,statuscode"
-            f"&filter=statuscode:200&collapse=urlkey&limit={limit}"
-        )
+        params = {
+            "url": url_pattern,
+            "output": "json",
+            "fl": "timestamp,original,statuscode",
+            "collapse": "urlkey",
+            "limit": limit,
+        }
+        if require_status200:
+            params["filter"] = "statuscode:200"
 
         max_retries = 5
         for attempt in range(max_retries):
             try:
-                resp = self._client.get(cdx_url, timeout=45.0)
+                resp = self._cdx_get(params)
+                if resp is None:
+                    # 所有入口连接失败(如本地网络屏蔽),重试无意义
+                    log.warning("[%s] CDX 入口不可达,跳过: %s", self.conference, url_pattern)
+                    return []
                 if resp.status_code == 200:
                     data = resp.json()
                     if len(data) <= 1:
@@ -169,6 +202,25 @@ class BaseSpider:
 
         log.error("[%s] CDX 查询 %d 次后仍失败: %s", self.conference, max_retries, url_pattern)
         return []
+
+    def wayback_find_pages(self, prefix_pattern: str, suffix_re, limit: int = 500) -> dict[str, str]:
+        """在某 URL 前缀的归档中查找匹配后缀的页面,返回 {original_url: 最新 timestamp}。
+
+        用于 TOC 页发现: 原始 TOC URL 未知时,从归档索引里反查实际被快照的页面。
+        不过滤 statuscode(归档的 HTML 页状态码可能缺失)。
+        """
+        results = self.wayback_cdx_search(prefix_pattern, limit=limit,
+                                          require_status200=False)
+        latest: dict[str, str] = {}
+        for r in results:
+            orig = r.get("original", "")
+            ts = r.get("timestamp", "")
+            if not orig or not ts:
+                continue
+            if suffix_re.search(orig.split("?")[0].lower()):
+                if orig not in latest or ts > latest[orig]:
+                    latest[orig] = ts
+        return latest
 
     @staticmethod
     def wayback_url(original_url: str, timestamp: str) -> str:

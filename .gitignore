@@ -17,3 +17,18 @@ desktop.ini
 .vscode/
 .idea/
 *.swp
+
+# AI/IDE 本地配置(不入库)
+.claude/
+.codebuddy/
+.gemini/
+.qoder/
+.mcp.json
+opencode.jsonc
+
+# 临时截图
+*.png
+!site/**/*.png
+
+# Added by code-review-graph
+.code-review-graph/

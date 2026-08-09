@@ -201,19 +201,6 @@
   "implemented": true
  },
  {
-  "code": "phuse-css",
-  "name": "FDA/PHUSE CSS",
-  "region": "US",
-  "lang": "en",
-  "count": 283,
-  "year_min": 2012,
-  "year_max": 2025,
-  "sections": [
-   "Posters"
-  ],
-  "implemented": true
- },
- {
   "code": "pharmasug-cn",
   "name": "PharmaSUG China",
   "region": "CN",
@@ -247,15 +234,67 @@
   "implemented": true
  },
  {
+  "code": "phuse-css",
+  "name": "FDA/PHUSE CSS",
+  "region": "US",
+  "lang": "en",
+  "count": 283,
+  "year_min": 2012,
+  "year_max": 2025,
+  "sections": [
+   "Posters"
+  ],
+  "implemented": true
+ },
+ {
+  "code": "mwsug",
+  "name": "MWSUG",
+  "region": "US",
+  "lang": "en",
+  "count": 89,
+  "year_min": 2025,
+  "year_max": 2026,
+  "sections": [
+   "AI and Emerging Technology",
+   "Analysis & Advanced Analytics",
+   "Anything Data",
+   "Banking and Finance",
+   "Basic and Intermediate SAS Coding",
+   "Beyond the Basics",
+   "Hands On-Workshops and Live Demos",
+   "Pharma and Life Sciences",
+   "Posters",
+   "Visualization and Reporting"
+  ],
+  "implemented": true
+ },
+ {
+  "code": "sas-innovate",
+  "name": "SAS Innovate",
+  "region": "Global",
+  "lang": "en",
+  "count": 74,
+  "year_min": 2025,
+  "year_max": 2026,
+  "sections": [
+   "HOW",
+   "Hands-on Learn Lab",
+   "LRN demonstration"
+  ],
+  "implemented": true
+ },
+ {
   "code": "pharmasug-jp",
   "name": "PharmaSUG Japan",
   "region": "JP",
   "lang": "ja",
-  "count": 0,
-  "year_min": null,
-  "year_max": null,
-  "sections": [],
-  "implemented": false
+  "count": 10,
+  "year_min": 2025,
+  "year_max": 2025,
+  "sections": [
+   "Presentations"
+  ],
+  "implemented": true
  },
  {
   "code": "wuss",
@@ -282,17 +321,6 @@
  {
   "code": "nesug",
   "name": "NESUG",
-  "region": "US",
-  "lang": "en",
-  "count": 0,
-  "year_min": null,
-  "year_max": null,
-  "sections": [],
-  "implemented": false
- },
- {
-  "code": "mwsug",
-  "name": "MWSUG",
   "region": "US",
   "lang": "en",
   "count": 0,
@@ -370,17 +398,6 @@
  {
   "code": "sas-explore",
   "name": "SAS Explore",
-  "region": "Global",
-  "lang": "en",
-  "count": 0,
-  "year_min": null,
-  "year_max": null,
-  "sections": [],
-  "implemented": false
- },
- {
-  "code": "sas-innovate",
-  "name": "SAS Innovate",
   "region": "Global",
   "lang": "en",
   "count": 0,

@@ -66,3 +66,6 @@ CONFERENCES: dict[str, dict] = {
     "pharmarug-cn":    {"name": "PharmaRUG China",       "region": "CN",    "lang": "zh", "start": 2023},
     "views":           {"name": "VIEWS",                 "region": "EU",    "lang": "en", "start": 2001},
 }
+
+# CRG test: add a comment
+

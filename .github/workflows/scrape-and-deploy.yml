@@ -1,0 +1,92 @@
+# 抓取会议论文并部署静态站到 GitHub Pages
+#
+# 触发方式:
+#   1. 定时: 每月 1 日 + 每年 6/7/11/12 月 15 日(会议季后补抓新论文)
+#   2. 手动: Actions 页面点 "Run workflow",可限定年份
+#
+# 流程: 拉取代码 → 装 Python 依赖 → 跑 scraper → 提交更新的 JSON → 部署 site/ 到 Pages
+# 这是"静态站 + 动态更新"的标准模式: 无服务器,数据由 CI 定时刷新。
+
+name: 抓取并部署
+
+on:
+  schedule:
+    - cron: '0 3 1 * *'           # 每月 1 日 UTC 03:00(北京 11:00)
+    - cron: '0 3 15 6,7,11,12 *'  # 会议季后补抓(PharmaSUG 5-6 月, PHUSE EU 11 月)
+  workflow_dispatch:
+    inputs:
+      conferences:
+        description: '会议代码(逗号分隔,留空=全部已实现)'
+        required: false
+        default: ''
+      years:
+        description: '限定年份(逗号分隔,留空=全部)'
+        required: false
+        default: ''
+
+permissions:
+  contents: write   # 提交抓取到的 JSON 数据
+  pages: write      # 部署 GitHub Pages
+  id-token: write
+
+concurrency:
+  group: scrape-deploy
+  cancel-in-progress: false
+
+jobs:
+  scrape-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v4
+
+      - name: 安装 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: scraper/requirements.txt
+
+      - name: 安装依赖
+        run: pip install -r scraper/requirements.txt
+
+      - name: 运行抓取脚本
+        working-directory: scraper
+        env:
+          CONF_INPUT: ${{ github.event.inputs.conferences }}
+          YEAR_INPUT: ${{ github.event.inputs.years }}
+        run: |
+          ARGS=""
+          [ -n "$CONF_INPUT" ] && ARGS="$ARGS -c $CONF_INPUT"
+          [ -n "$YEAR_INPUT" ] && ARGS="$ARGS --years $YEAR_INPUT"
+          echo "运行: python main.py $ARGS"
+          python main.py $ARGS
+
+      - name: 提交更新的数据
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add site/data/*.json
+          if git diff --cached --quiet; then
+            echo "✓ 无新数据,跳过提交"
+          else
+            git commit -m "data: 自动抓取更新 $(date -u +%Y-%m-%d)"
+            git push
+            echo "✓ 已提交新数据"
+          fi
+
+      - name: 上传站点产物
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: scrape-and-build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: 部署到 GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

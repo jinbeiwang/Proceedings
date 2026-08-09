@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ClinProc · 临床编程会议论文索引 — Refined Archive</title>
+  <meta name="description" content="汇总 PharmaSUG、PHUSE、SAS Global Forum、R/Pharma 等临床编程会议论文,可检索、可分类浏览。Refined Archive 设计。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400;1,6..72,500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/lunr@2.3.9/lunr.min.js" defer></script>
+  <script src="assets/js/app.js" defer></script>
+</head>
+<body>
+  <div class="bg-layer grid-bg" aria-hidden="true"></div>
+  <div class="bg-layer glow-bg glow-bg-1" aria-hidden="true"></div>
+  <div class="bg-layer glow-bg glow-bg-2" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <a href="#" class="brand">
+        <span class="brand-mark"><span class="brand-mark-inner">CP</span></span>
+        <span class="brand-text">ClinProc<small>临床编程会议论文索引</small></span>
+      </a>
+      <nav class="topnav">
+        <a href="#conferences" class="nav-link">会议</a>
+        <a href="#about" class="nav-link">关于</a>
+        <a href="https://github.com/" target="_blank" rel="noopener" class="nav-link nav-gh">GitHub</a>
+        <button id="theme-toggle" class="theme-toggle" aria-label="切换主题">
+          <svg class="icon-sun" viewBox="0 0 24 24" width="16" height="16"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><line x1="12" y1="2" x2="12" y2="4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="20" x2="12" y2="22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="4.93" y1="4.93" x2="6.34" y2="6.34" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="17.66" y1="17.66" x2="19.07" y2="19.07" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="2" y1="12" x2="4" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="20" y1="12" x2="22" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="4.93" y1="19.07" x2="6.34" y2="17.66" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="17.66" y1="6.34" x2="19.07" y2="4.93" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" width="16" height="16"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="wrap hero-inner">
+      <div class="hero-tag"><span class="tag-dot"></span>CLINICAL PROGRAMMING · PAPERS INDEX</div>
+      <h1 class="hero-title">临床编程会议论文<br><span class="hero-accent">一站检索</span></h1>
+      <p class="hero-sub">汇集 PharmaSUG、PHUSE、SAS Global Forum、R/Pharma 等行业会议论文,按会议 · 年份 · 主题分类,全文检索。</p>
+      <div class="search-box">
+        <span class="search-prompt" aria-hidden="true">›</span>
+        <svg class="search-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M21 21l-5-5m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        <input id="search" type="search" placeholder="搜索标题、主题、会议编号…  如 ADaM、macro、TLF、validation" autocomplete="off" aria-label="搜索论文">
+        <kbd class="search-kbd" aria-hidden="true">/</kbd>
+        <button id="search-clear" class="search-clear" hidden>&times;</button>
+      </div>
+      <div class="stat-strip" id="stat-strip">
+        <div class="stat-item"><b id="stat-papers">—</b><span>篇论文</span></div>
+        <div class="stat-sep"></div>
+        <div class="stat-item"><b id="stat-confs">—</b><span>个会议</span></div>
+        <div class="stat-sep"></div>
+        <div class="stat-item"><b id="stat-years">—</b><span>年份跨度</span></div>
+        <div class="stat-sep"></div>
+        <div class="stat-item"><b id="stat-updated">—</b><span>最近更新</span></div>
+      </div>
+    </div>
+  </section>
+
+  <main class="wrap layout">
+    <button class="filter-toggle" id="filter-toggle" aria-label="切换筛选面板">
+      <span>筛选 <span class="filter-count" id="filter-count-mobile"></span></span>
+      <svg class="filter-toggle-icon" viewBox="0 0 24 24" width="14" height="14"><path fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" d="M6 9l6 6 6-6"/></svg>
+    </button>
+    <aside class="filters" id="filters">
+      <div class="filter-head">
+        <span class="filter-title">筛选<span class="filter-count" id="filter-count"></span></span>
+        <button id="reset-filters" class="btn-reset">清除全部</button>
+      </div>
+      <div class="filter-group collapsed">
+        <button class="filter-label" data-toggle="conf">会议<span class="filter-active-count"></span><svg viewBox="0 0 24 24" width="12" height="12"><path fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" d="M6 9l6 6 6-6"/></svg></button>
+        <div id="filter-conf" class="chip-list"></div>
+      </div>
+      <div class="filter-group collapsed">
+        <button class="filter-label" data-toggle="region">地区<span class="filter-active-count"></span><svg viewBox="0 0 24 24" width="12" height="12"><path fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" d="M6 9l6 6 6-6"/></svg></button>
+        <div id="filter-region" class="chip-list"></div>
+      </div>
+      <div class="filter-group collapsed">
+        <button class="filter-label" data-toggle="year">年份<span class="filter-active-count"></span><svg viewBox="0 0 24 24" width="12" height="12"><path fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" d="M6 9l6 6 6-6"/></svg></button>
+        <div id="filter-year" class="chip-list chip-list-scroll"></div>
+      </div>
+      <div class="filter-group collapsed">
+        <button class="filter-label" data-toggle="section">主题 / Section<span class="filter-active-count"></span><svg viewBox="0 0 24 24" width="12" height="12"><path fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" d="M6 9l6 6 6-6"/></svg></button>
+        <div id="filter-section" class="chip-list chip-list-scroll"></div>
+      </div>
+      <div class="filter-active-bar" id="filter-active-bar"></div>
+    </aside>
+
+    <section class="results" id="results">
+      <div class="results-head">
+        <div class="results-count" id="results-count">加载中…</div>
+        <div class="results-sort">
+          <label for="sort">排序</label>
+          <select id="sort">
+            <option value="relevance">相关度</option>
+            <option value="year-desc" selected>年份 ↓</option>
+            <option value="year-asc">年份 ↑</option>
+            <option value="title">标题 A-Z</option>
+          </select>
+        </div>
+      </div>
+      <div id="results-list" class="results-list"></div>
+      <div id="pager" class="pager" hidden></div>
+    </section>
+  </main>
+
+  <section id="conferences" class="conf-section">
+    <div class="wrap">
+      <div class="section-marker"><span class="marker-num">02</span> CONFERENCES</div>
+      <h2 class="section-title">收录会议</h2>
+      <p class="section-desc">点击卡片可快速筛选该会议全部论文。灰色为尚未接入抓取的会议,后续逐步补全。</p>
+      <div id="conf-grid" class="conf-grid"></div>
+    </div>
+  </section>
+
+  <section id="about" class="about-section">
+    <div class="wrap">
+      <div class="section-marker"><span class="marker-num">03</span> ABOUT</div>
+      <h2 class="section-title">关于本项目</h2>
+      <div class="about-body">
+        <p>本项目是一个<strong>纯静态、零服务器</strong>的会议论文索引站,灵感来自已离线的 Lex Jansen 索引站,并参考了 clinyun.com/ppi 与 clinstandards.org 的资源组织方式。</p>
+        <p><strong>动态更新机制:</strong>站点本身是静态 HTML,通过 GitHub Actions 定时(每月 + 会议季后)运行 Python 抓取脚本,从各会议官网获取最新论文,更新数据后自动重新部署到 GitHub Pages。无需任何服务器或数据库。</p>
+        <p><strong>版权说明:</strong>本站仅做索引与链接,论文 PDF 版权属于各会议与作者,点击直达官方原始 PDF。如需镜像或抓取会员专有内容,请先获得授权。</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <span>ClinProc · 纯静态站 + GitHub Actions 自动抓取</span>
+      <span class="footer-links">
+        <a href="https://www.pharmasug.org" target="_blank" rel="noopener">PharmaSUG</a>
+        <a href="https://www.phuse.global" target="_blank" rel="noopener">PHUSE</a>
+        <a href="https://www.cdisc.org" target="_blank" rel="noopener">CDISC</a>
+      </span>
+    </div>
+  </footer>
+
+  <div id="toast" class="toast" hidden></div>
+
+  <button class="scroll-top" id="scroll-top" aria-label="回到顶部">
+    <svg viewBox="0 0 24 24" width="18" height="18"><path fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" d="M12 19V5M5 12l7-7 7 7"/></svg>
+  </button>
+</body>
+</html>

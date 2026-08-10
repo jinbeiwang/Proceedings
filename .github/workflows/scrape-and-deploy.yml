@@ -1,11 +1,11 @@
 # 抓取会议论文并部署静态站到 GitHub Pages
 #
 # 触发方式:
-#   1. 推送: 前端/脚本改动 push 后自动重新部署
+#   1. 推送: 前端/脚本改动 push 后自动重新部署(跳过爬虫,几分钟内生效)
 #   2. 定时: 每月 1 日 + 每年 6/7/11/12 月 15 日(会议季后补抓新论文)
 #   3. 手动: Actions 页面点 "Run workflow",可限定年份
 #
-# 流程: 拉取代码 → 装 Python 依赖 → 跑 scraper → 提交更新的 JSON → 部署 site/ 到 Pages
+# 流程: 拉取代码 → 装 Python 依赖 → 跑 scraper(仅定时/手动) → 提交更新的 JSON → 部署 site/ 到 Pages
 # 这是"静态站 + 动态更新"的标准模式: 无服务器,数据由 CI 定时刷新。
 
 name: 抓取并部署
@@ -54,6 +54,7 @@ jobs:
         run: pip install -r scraper/requirements.txt
 
       - name: 运行抓取脚本
+        if: github.event_name != 'push'   # push 触发只部署,不重新爬取
         working-directory: scraper
         env:
           CONF_INPUT: ${{ github.event.inputs.conferences }}
@@ -69,6 +70,7 @@ jobs:
           python main.py $ARGS
 
       - name: 提交更新的数据
+        if: github.event_name != 'push'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"

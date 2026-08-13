@@ -604,3 +604,65 @@ button { font-family: inherit; cursor: pointer; }
 [data-theme="dark"] .tint-5 { --tint-bg: #24200e; --tint-edge: #d4b83a; }
 [data-theme="dark"] .tint-6 { --tint-bg: #1f1830; --tint-edge: #a78bfa; }
 [data-theme="dark"] .tint-7 { --tint-bg: #101f2c; --tint-edge: #60a5fa; }
+
+/* ---------- v7: Resources view ---------- */
+.resources-hero { padding: 48px 0 10px; text-align: center; }
+.resources-title {
+  font-family: var(--font-serif);
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 600; letter-spacing: -.5px; margin-top: 18px;
+}
+.resources-sub {
+  margin: 12px auto 0; max-width: 640px;
+  color: var(--text-soft); font-size: 15px;
+}
+.res-search { margin: 22px auto 0; max-width: 560px; }
+.res-chips {
+  justify-content: center; margin: 14px auto 0;
+  max-width: 780px;
+}
+.resources-main { padding: 26px 24px 8px; }
+.res-section { margin-bottom: 30px; }
+.res-section-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 12px; }
+.res-section-title { font-size: 17px; font-weight: 700; }
+.res-section-count {
+  font-size: 12px; color: var(--text-faint); background: var(--chip-bg);
+  border-radius: 999px; padding: 1px 9px;
+}
+.res-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+}
+.res-card {
+  background: var(--tint-bg, var(--bg-elev));
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--tint-edge, var(--accent));
+  border-radius: var(--radius); padding: 15px 17px;
+  display: flex; flex-direction: column; gap: 8px;
+  color: var(--text); transition: .16s;
+}
+.res-card:hover {
+  border-color: var(--accent); box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+.res-name {
+  font-weight: 700; font-size: 15px;
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+}
+.res-ext { color: var(--text-faint); flex: none; }
+.res-card:hover .res-ext { color: var(--accent); }
+.res-desc { font-size: 13px; color: var(--text-soft); line-height: 1.55; flex: 1; }
+.res-tags { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.res-tag {
+  font-size: 11px; font-weight: 600; color: var(--text-soft);
+  background: var(--chip-bg); border-radius: 999px; padding: 2px 9px;
+}
+.res-lang {
+  font-family: var(--font-mono); font-size: 10px; color: var(--text-faint);
+  border: 1px solid var(--border); border-radius: 4px; padding: 0 5px;
+  margin-left: auto;
+}
+.resources-foot {
+  padding: 4px 24px 60px; text-align: center;
+  font-size: 13.5px; color: var(--text-faint);
+}

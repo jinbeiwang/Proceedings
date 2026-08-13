@@ -26,6 +26,7 @@
       <nav class="topnav">
         <a href="#/" class="nav-link" data-nav="home">Home</a>
         <a href="#/browse" class="nav-link" data-nav="browse">Browse Papers</a>
+        <a href="#/resources" class="nav-link" data-nav="resources">Resources</a>
         <a href="#/" class="nav-link" data-scroll="conferences">Conferences</a>
         <a href="#/" class="nav-link" data-scroll="about">About</a>
         <a id="github-link" href="https://github.com/jinbeiwang/Proceedings" target="_blank" rel="noopener" class="nav-link nav-gh">GitHub</a>
@@ -91,12 +92,36 @@
         <div class="section-marker"><span class="marker-num">02</span> ABOUT</div>
         <h2 class="section-title">About This Project</h2>
         <div class="about-body">
-          <p>ClinProc is a <strong>fully static, serverless</strong> index of conference papers, inspired by the now-offline Lex Jansen index and the resource organisation of clinyun.com/ppi and clinstandards.org. The interface draws on Semantic Scholar and Hugging Face Papers.</p>
+          <p>ClinProc is a <strong>fully static, serverless</strong> index of conference papers, inspired by the now-offline Lex Jansen index and the resource organisation of clinstandards.org. The interface draws on Semantic Scholar and Hugging Face Papers.</p>
           <p><strong>How it stays current:</strong> the site is plain HTML; a GitHub Actions workflow runs the Python scraper on a schedule (monthly + after conference seasons), commits the refreshed JSON and redeploys to GitHub Pages. No servers, no databases.</p>
           <p><strong>Copyright:</strong> this site only indexes and links. PDF copyright belongs to the conferences and authors; links go straight to the official originals. Ask for permission before mirroring or scraping members-only content.</p>
         </div>
       </div>
     </section>
+  </div>
+
+  <!-- ============ VIEW: RESOURCES ============ -->
+  <div id="view-resources" hidden>
+    <section class="resources-hero">
+      <div class="wrap">
+        <div class="hero-tag"><span class="tag-dot"></span>CURATED · COMMUNITY MAINTAINED</div>
+        <h1 class="resources-title">Community <span class="hero-accent">Resources</span></h1>
+        <p class="resources-sub">Standards bodies, open-source ecosystems, communities and learning hubs for clinical programmers — curated and continuously updated.</p>
+        <form class="search-box search-box-compact res-search" id="search-form-resources" role="search">
+          <svg class="search-icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M21 21l-5-5m2-7a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          <input id="search-resources" type="search" placeholder="Filter resources… e.g. CDISC, R, validation" autocomplete="off" aria-label="Filter resources">
+          <button id="search-clear-resources" type="button" class="search-clear" hidden>&times;</button>
+          <button type="submit" class="search-btn search-btn-icon" aria-label="Filter">
+            <svg viewBox="0 0 24 24" width="15" height="15"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" d="M21 21l-5-5m2-7a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          </button>
+        </form>
+        <div id="res-tag-chips" class="chip-list res-chips"></div>
+      </div>
+    </section>
+    <main class="wrap resources-main" id="resources-main"></main>
+    <div class="wrap resources-foot">
+      Know a great resource? <a href="https://github.com/jinbeiwang/Proceedings/issues/new" target="_blank" rel="noopener">Suggest a resource →</a>
+    </div>
   </div>
 
   <!-- ============ VIEW: BROWSE ============ -->

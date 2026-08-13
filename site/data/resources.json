@@ -1,0 +1,194 @@
+[
+  {
+    "name": "CDISC",
+    "url": "https://www.cdisc.org",
+    "desc": "The standards body behind SDTM, ADaM, SEND and Define-XML — the backbone of regulatory submissions.",
+    "category": "standards",
+    "tags": ["Standards", "CDISC"],
+    "lang": "EN"
+  },
+  {
+    "name": "CDISC Library",
+    "url": "https://library.cdisc.org",
+    "desc": "Free machine-readable metadata and controlled terminology for every CDISC model.",
+    "category": "standards",
+    "tags": ["Standards", "CDISC", "Tools"],
+    "lang": "EN"
+  },
+  {
+    "name": "FDA Study Data Standards",
+    "url": "https://www.fda.gov/industry/fda-data-standards-advisory-board/study-data-standards-resources",
+    "desc": "FDA's data-standards catalog and study-data submission guidances for CDER/CBER.",
+    "category": "standards",
+    "tags": ["Regulatory", "Standards"],
+    "lang": "EN"
+  },
+  {
+    "name": "EMA",
+    "url": "https://www.ema.europa.eu",
+    "desc": "EU regulator — eSubmission formats and data-standards requirements.",
+    "category": "standards",
+    "tags": ["Regulatory"],
+    "lang": "EN"
+  },
+  {
+    "name": "Pinnacle 21",
+    "url": "https://pinnacle21.com",
+    "desc": "CDISC conformance validation tooling; free Community Edition for checks.",
+    "category": "standards",
+    "tags": ["Validation", "CDISC", "Tools"],
+    "lang": "EN"
+  },
+  {
+    "name": "Open Pharma",
+    "url": "https://openpharma.github.io",
+    "desc": "Community hub indexing hundreds of open-source repositories for the pharma industry.",
+    "category": "opensource",
+    "tags": ["Open Source", "R", "Community"],
+    "lang": "EN"
+  },
+  {
+    "name": "pharmaverse",
+    "url": "https://pharmaverse.org",
+    "desc": "Curated R packages for end-to-end clinical reporting: admiral, teal, rtables and friends.",
+    "category": "opensource",
+    "tags": ["R", "Open Source", "Packages"],
+    "lang": "EN"
+  },
+  {
+    "name": "R Consortium",
+    "url": "https://r-consortium.org",
+    "desc": "Foundation supporting R infrastructure; home of the R Submission Working Group.",
+    "category": "opensource",
+    "tags": ["R", "Open Source", "Non-profit"],
+    "lang": "EN"
+  },
+  {
+    "name": "Open Source in Pharma",
+    "url": "https://opensourceinpharma.com",
+    "desc": "Registered non-profit promoting open-source languages across the pharma industry.",
+    "category": "opensource",
+    "tags": ["Open Source", "Non-profit"],
+    "lang": "EN"
+  },
+  {
+    "name": "Posit",
+    "url": "https://posit.co",
+    "desc": "RStudio, Shiny, cheatsheets and enterprise-ready R & Python tooling.",
+    "category": "opensource",
+    "tags": ["R", "Tools"],
+    "lang": "EN"
+  },
+  {
+    "name": "Tidyverse",
+    "url": "https://tidyverse.org",
+    "desc": "Core R packages for data wrangling and visualisation, with excellent docs.",
+    "category": "opensource",
+    "tags": ["R", "Packages", "Docs"],
+    "lang": "EN"
+  },
+  {
+    "name": "CRAN Task Views",
+    "url": "https://cran.r-project.org/web/views/",
+    "desc": "Curated CRAN package lists, including the ClinicalTrials and Pharmacokinetics views.",
+    "category": "opensource",
+    "tags": ["R", "Packages"],
+    "lang": "EN"
+  },
+  {
+    "name": "Insights Engineering",
+    "url": "https://insightsengineering.github.io",
+    "desc": "Roche's open-source engineering portal behind many pharmaverse tools.",
+    "category": "opensource",
+    "tags": ["Open Source", "R", "Packages"],
+    "lang": "EN"
+  },
+  {
+    "name": "PHUSE",
+    "url": "https://phuse.global",
+    "desc": "International community for applied clinical research — connect events and working groups.",
+    "category": "community",
+    "tags": ["Community", "Conference"],
+    "lang": "EN"
+  },
+  {
+    "name": "PHUSE Advance Hub",
+    "url": "https://advance.hub.phuse.global",
+    "desc": "Working-group wiki: white papers, standard scripts and shared deliverables.",
+    "category": "community",
+    "tags": ["Community", "Docs"],
+    "lang": "EN"
+  },
+  {
+    "name": "PharmaSUG",
+    "url": "https://www.pharmasug.org",
+    "desc": "Pharmaceutical SAS users group — US, China and Japan chapters.",
+    "category": "community",
+    "tags": ["Community", "SAS", "Conference"],
+    "lang": "EN"
+  },
+  {
+    "name": "R/Pharma",
+    "url": "https://rinpharma.com",
+    "desc": "The annual non-profit conference for R users in the pharmaceutical industry.",
+    "category": "community",
+    "tags": ["Community", "R", "Conference"],
+    "lang": "EN"
+  },
+  {
+    "name": "OHDSI",
+    "url": "https://ohdsi.org",
+    "desc": "Observational health data sciences community; stewards of the OMOP common data model.",
+    "category": "community",
+    "tags": ["Community", "Open Source", "Data Model"],
+    "lang": "EN"
+  },
+  {
+    "name": "TransCelerate",
+    "url": "https://www.transcelerate.com",
+    "desc": "Cross-industry biopharma collaboration: data standards, digital data flow and more.",
+    "category": "community",
+    "tags": ["Community", "Standards"],
+    "lang": "EN"
+  },
+  {
+    "name": "SAS Documentation",
+    "url": "https://documentation.sas.com",
+    "desc": "Official SAS language references and product documentation.",
+    "category": "sas",
+    "tags": ["SAS", "Docs"],
+    "lang": "EN"
+  },
+  {
+    "name": "SAS Support Communities",
+    "url": "https://communities.sas.com",
+    "desc": "Product Q&A forums staffed by SAS experts and power users.",
+    "category": "sas",
+    "tags": ["SAS", "Community"],
+    "lang": "EN"
+  },
+  {
+    "name": "SAS Blogs",
+    "url": "https://blogs.sas.com",
+    "desc": "Tips, techniques and analytics articles from SAS professionals.",
+    "category": "sas",
+    "tags": ["SAS", "Blog"],
+    "lang": "EN"
+  },
+  {
+    "name": "Clinical Data Standards Hub",
+    "url": "https://www.clinstandards.org",
+    "desc": "Dashboard for CDISC standards and FDA guidelines, with learning modules and community tools.",
+    "category": "learning",
+    "tags": ["Learning", "CDISC", "Tools"],
+    "lang": "EN"
+  },
+  {
+    "name": "R for Data Science",
+    "url": "https://r4ds.hadley.nz",
+    "desc": "The canonical free book for building R data skills — import, tidy, transform, visualise, model.",
+    "category": "learning",
+    "tags": ["Learning", "R"],
+    "lang": "EN"
+  }
+]

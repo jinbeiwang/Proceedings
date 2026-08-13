@@ -40,6 +40,15 @@
     "views": "VIEWS — European data-visualisation conference.",
   };
 
+  // ---- resources view: category registry (order + tint) ----
+  const RES_CATEGORIES = [
+    { key: "standards", label: "Standards & Regulatory", tint: 0 },
+    { key: "opensource", label: "Open Source & R Ecosystem", tint: 1 },
+    { key: "community", label: "Communities & Organizations", tint: 2 },
+    { key: "sas", label: "SAS & Vendor Resources", tint: 3 },
+    { key: "learning", label: "Learning & Knowledge Hubs", tint: 4 },
+  ];
+
   // ---- state ----
   const state = {
     papers: [],
@@ -51,6 +60,9 @@
     page: 1,
     ready: false,
     view: "home",
+    resources: [],
+    resQuery: "",
+    resTags: new Set(),
   };
 
   // ---- utils ----
@@ -112,6 +124,11 @@
       if (!pRes.ok) throw new Error("failed to load papers.json");
       state.papers = await pRes.json();
       state.confs = cRes.ok ? await cRes.json() : [];
+      // optional curated resource list (drives the Resources view)
+      try {
+        const rRes = await fetch("data/resources.json");
+        state.resources = rRes.ok ? await rRes.json() : [];
+      } catch { state.resources = []; }
       // stable tint per conference (index in conferences.json)
       state.confs.forEach((c, i) => { c.tint = i % 8; });
       buildIndex();
@@ -268,6 +285,59 @@
         location.hash = `#/browse/${card.dataset.conf}`;
       });
     });
+  }
+
+  // ---- resources view: tag chips + keyword filter over resources.json ----
+  function renderResources() {
+    const main = $("#resources-main");
+    if (!state.resources.length) {
+      main.innerHTML = `<div class="empty-state"><div class="empty-icon">∅</div>Resource list not loaded.</div>`;
+      return;
+    }
+    const q = state.resQuery.trim().toLowerCase();
+    const tags = state.resTags;
+    const items = state.resources.filter((r) => {
+      if (tags.size && !(r.tags || []).some((t) => tags.has(t))) return false;
+      if (q) {
+        const hay = `${r.name} ${r.desc} ${(r.tags || []).join(" ")}`.toLowerCase();
+        if (!q.split(/\s+/).every((t) => hay.includes(t))) return false;
+      }
+      return true;
+    });
+
+    const tagMap = {};
+    for (const r of state.resources) for (const t of r.tags || []) tagMap[t] = (tagMap[t] || 0) + 1;
+    const chipBox = $("#res-tag-chips");
+    chipBox.innerHTML = Object.entries(tagMap).sort((a, b) => b[1] - a[1]).map(([t, c]) =>
+      `<span class="chip ${tags.has(t) ? "active" : ""}" data-tag="${esc(t)}">${esc(t)}<span class="chip-count">${c}</span></span>`).join("");
+    chipBox.querySelectorAll(".chip").forEach((ch) => ch.addEventListener("click", () => {
+      const t = ch.dataset.tag;
+      if (tags.has(t)) tags.delete(t); else tags.add(t);
+      renderResources();
+    }));
+
+    if (!items.length) {
+      main.innerHTML = `<div class="empty-state"><div class="empty-icon">∅</div>No resources match. Clear some tags or change keywords.</div>`;
+      return;
+    }
+
+    main.innerHTML = RES_CATEGORIES.map((cat) => {
+      const list = items.filter((r) => r.category === cat.key);
+      if (!list.length) return "";
+      return `<section class="res-section">
+        <div class="res-section-head">
+          <h2 class="res-section-title">${esc(cat.label)}</h2>
+          <span class="res-section-count">${list.length}</span>
+        </div>
+        <div class="res-grid">${list.map((r) => `
+          <a class="res-card tint-${cat.tint}" href="${esc(safeUrl(r.url))}" target="_blank" rel="noopener">
+            <span class="res-name">${esc(r.name)}<svg class="res-ext" viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg></span>
+            <span class="res-desc">${esc(r.desc)}</span>
+            <span class="res-tags">${(r.tags || []).map((t) => `<span class="res-tag">${esc(t)}</span>`).join("")}${r.lang ? `<span class="res-lang">${esc(r.lang)}</span>` : ""}</span>
+          </a>`).join("")}
+        </div>
+      </section>`;
+    }).join("");
   }
 
   // ---- browse: conference tab strip (HF-style secondary nav) ----
@@ -528,16 +598,24 @@
     state.view = view;
     $("#view-home").hidden = view !== "home";
     $("#view-browse").hidden = view !== "browse";
+    $("#view-resources").hidden = view !== "resources";
     document.querySelectorAll("[data-nav]").forEach((a) =>
       a.classList.toggle("active", a.dataset.nav === view));
     document.title = view === "browse"
       ? "Browse Papers · ClinProc"
-      : "ClinProc · Clinical Programming Conference Proceedings Index";
+      : view === "resources"
+        ? "Resources · ClinProc"
+        : "ClinProc · Clinical Programming Conference Proceedings Index";
     window.scrollTo({ top: 0 });
   }
 
   function route() {
     const h = location.hash || "#/";
+    if (/^#\/resources/.test(h)) {
+      showView("resources");
+      if (state.ready) renderResources();
+      return;
+    }
     const m = h.match(/^#\/browse(?:\/([\w.-]+))?/);
     if (m) {
       showView("browse");
@@ -610,6 +688,28 @@
       apply();
     });
 
+    // resources search: live + submit (independent of paper search)
+    const resInput = $("#search-resources"), resClear = $("#search-clear-resources");
+    let rdt;
+    resInput.addEventListener("input", () => {
+      clearTimeout(rdt);
+      rdt = setTimeout(() => {
+        state.resQuery = resInput.value;
+        resClear.hidden = !resInput.value;
+        renderResources();
+      }, 180);
+    });
+    resClear.addEventListener("click", () => {
+      resInput.value = ""; state.resQuery = "";
+      resClear.hidden = true; renderResources(); resInput.focus();
+    });
+    $("#search-form-resources").addEventListener("submit", (e) => {
+      e.preventDefault();
+      state.resQuery = resInput.value;
+      resClear.hidden = !resInput.value;
+      renderResources();
+    });
+
     $("#sort").addEventListener("change", (e) => { state.sort = e.target.value; state.page = 1; apply(); });
 
     $("#reset-filters").addEventListener("click", () => {
@@ -636,9 +736,9 @@
 
     // keyboard: / focuses the visible search box
     document.addEventListener("keydown", (e) => {
-      const homeInput = $("#search"), browseInput = $("#search-browse");
-      const active = state.view === "home" ? homeInput : browseInput;
-      if (e.key === "/" && document.activeElement !== homeInput && document.activeElement !== browseInput) {
+      const inputs = { home: $("#search"), browse: $("#search-browse"), resources: $("#search-resources") };
+      const active = inputs[state.view] || inputs.home;
+      if (e.key === "/" && document.activeElement !== inputs.home && document.activeElement !== inputs.browse && document.activeElement !== inputs.resources) {
         e.preventDefault(); active.focus();
       }
       if (e.key === "Escape" && document.activeElement === active) active.blur();

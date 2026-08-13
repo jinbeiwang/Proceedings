@@ -104,11 +104,58 @@ git push
 | `scraper/` 抓取脚本 | ✅ 需要 | 新脚本推上去后,云端才会用它抓 |
 | `.github/workflows/` 工作流 | ✅ 需要 | 同上 |
 | `site/data/papers.json` 论文数据 | ❌ 不需要 | Actions 每月自动抓取、自动提交、自动部署 |
+| `site/data/resources.json` 资源网站 | ✅ 需要 | Resources 页数据,人工维护,见第五节 |
 | README、文档 | 随意 | 想备份就 push |
 
 ---
 
-## 五、常见报错自查
+## 五、给 Resources 页添加新资源网站(零代码)
+
+Resources 页的数据全部在一个文件里:`site\data\resources.json`。加网站 = 在这个文件里加一段,**完全不用碰代码**。
+
+### 操作步骤
+
+1. 用记事本或 VS Code 打开 `g:\test\proceedings\site\data\resources.json`;
+2. 复制任意一个现有的 `{ ... }` 块(连结尾的逗号一起),粘贴到最后一个 `}` 之前;
+3. 改成新网站的信息,保存。
+
+一段长这样:
+
+```json
+  {
+    "name": "Example Org",
+    "url": "https://example.org",
+    "desc": "One-sentence English description of the site.",
+    "category": "opensource",
+    "tags": ["R", "Tools"],
+    "lang": "EN"
+  },
+```
+
+### 字段说明
+
+| 字段 | 显示位置 | 怎么填 |
+|---|---|---|
+| `name` | 卡片标题 | 网站名 |
+| `url` | 点击跳转 | 必须以 `https://` 开头 |
+| `desc` | 卡片描述 | 一句英文,建议 20 个词以内 |
+| `category` | 所属分区 | 只能填这 5 个之一:`standards`(标准与监管)/ `opensource`(开源与 R)/ `community`(社区与组织)/ `sas`(SAS 相关)/ `learning`(学习资源) |
+| `tags` | 筛选标签 | 可写多个,如 `["R", "Docs"]`,尽量复用已有标签 |
+| `lang` | 语言角标 | 一般填 `EN` |
+
+### 三个常见错误
+
+1. **漏逗号**:两个 `{ }` 块之间必须有英文逗号 `,`(最后一块后面不要);
+2. **中文引号**:所有引号必须是英文半角 `"`,中文引号会让整个文件失效;
+3. **category 写错**:填了 5 个值以外的词,该网站不会显示在任何分区。
+
+改完后按第二节 6 步推送:`git add -A` → `git commit -m "新增资源网站 XX"` → `git push`,2–5 分钟自动上线。
+
+> 想加一个全新的"分类"(而不是新网站)才需要改代码(`site\assets\js\app.js` 里的 `RES_CATEGORIES`)。不懂代码就把网站放进最接近的现有分类。
+
+---
+
+## 六、常见报错自查
 
 1. **`fatal: unable to access ... Connection was reset`**
    本机网络封了 HTTPS。本项目已配置 SSH,若 remote 被改坏,用下面命令恢复:

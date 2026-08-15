@@ -87,7 +87,27 @@ git push
 
 ---
 
-## 三、如何确认部署成功 / 排查失败
+## 三、更省事:一键自动推送(推荐)
+
+不想记命令?双击项目根目录的 **`auto-push.bat`**,脚本自动完成全部事情:
+
+1. `git add -A` 加入所有改动;
+2. 没有改动 → 提示“不需要推送”并结束;
+3. 有改动 → 自动写一条带时间戳的提交说明并 commit;
+4. `git pull --rebase` 先同步云端(避免被 Actions 的数据提交顶回来);
+5. `git push` 上传。
+
+全程中文提示,成功会显示“推送成功!网站将在 2-5 分钟内自动更新”。
+
+想自定义提交说明,就在 PowerShell 里运行(而不是双击):
+
+```powershell
+.\auto_push.ps1 "新增资源网站 XX"
+```
+
+---
+
+## 四、如何确认部署成功 / 排查失败
 
 - **Actions 标签页**(`仓库页顶部 → Actions`):
   - 绿色 ✅ = 成功;红色 ❌ = 失败;黄色转圈 = 正在跑。
@@ -96,7 +116,7 @@ git push
 
 ---
 
-## 四、哪些改动需要 push?
+## 五、哪些改动需要 push?
 
 | 改动内容 | 需要 push 吗 | 说明 |
 |---|---|---|
@@ -109,7 +129,7 @@ git push
 
 ---
 
-## 五、给 Resources 页添加新资源网站(零代码)
+## 六、给 Resources 页添加新资源网站(零代码)
 
 Resources 页的数据全部在一个文件里:`site\data\resources.json`。加网站 = 在这个文件里加一段,**完全不用碰代码**。
 
@@ -149,13 +169,13 @@ Resources 页的数据全部在一个文件里:`site\data\resources.json`。加�
 2. **中文引号**:所有引号必须是英文半角 `"`,中文引号会让整个文件失效;
 3. **category 写错**:填了 5 个值以外的词,该网站不会显示在任何分区。
 
-改完后按第二节 6 步推送:`git add -A` → `git commit -m "新增资源网站 XX"` → `git push`,2–5 分钟自动上线。
+改完后双击 `auto-push.bat`(或按第二节手动 6 步)推送,2–5 分钟自动上线。
 
 > 想加一个全新的"分类"(而不是新网站)才需要改代码(`site\assets\js\app.js` 里的 `RES_CATEGORIES`)。不懂代码就把网站放进最接近的现有分类。
 
 ---
 
-## 六、常见报错自查
+## 七、常见报错自查
 
 1. **`fatal: unable to access ... Connection was reset`**
    本机网络封了 HTTPS。本项目已配置 SSH,若 remote 被改坏,用下面命令恢复:
@@ -180,6 +200,7 @@ Resources 页的数据全部在一个文件里:`site\data\resources.json`。加�
 ## 附:命令速查表(整段复制即可)
 
 ```powershell
+# 懒人方式:直接双击 auto-push.bat,等于下面 4 条命令
 cd g:\test\proceedings
 git status
 git add -A

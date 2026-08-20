@@ -128,13 +128,13 @@ python -m http.server 8765
 
 ## 当前覆盖情况
 
-约 **15,500 篇**,年份 1976–2026:
+约 **15,900 篇**,年份 1976–2026:
 
 | 会议 | 状态 | 说明 |
 |---|---|---|
 | SUGI(1976–2006) | ✅ 已实现 | support.sas.com 归档,约 5,700 篇 |
 | PharmaSUG US | ✅ 已实现 | 新年份官网直抓;旧年份(1997–2021)经 Wayback Machine 恢复 |
-| PharmaSUG China | ✅ 已实现 | 2024/2025 官网未发布 proceedings,待 Wayback/第三方源补齐 |
+| PharmaSUG China | ✅ 已实现 | 2023 起走 pharmasug.com.cn 官方 API(含 2026);2012–2022 经 Wayback/lexjansen 恢复 |
 | PharmaSUG Japan | ✅ 已实现 | pharmasug.org/proceedings/japan{year}/ 直连(2023/2025);其余年份反爬 403,走 Wayback |
 | SAS Global Forum(2007–2021) | ✅ 已实现 | support.sas.com 归档;SGF 自 2022 起停办,继任会议为 SAS Innovate |
 | SAS Innovate(2025–) | ✅ 已实现 | 每场 session 一个 GitHub 仓库,收录标题/摘要/讲者/PDF;支持 GITHUB_TOKEN 环境变量提额 |
@@ -145,7 +145,7 @@ python -m http.server 8765
 
 > **新会议源勘察结论(2026-08)**:posit::conf 与 SAS Explore 均无公开 PDF proceedings(以演讲/视频为主),不适合本索引模式;区域 SUG 中 NESUG 站点不可达、SCSUG 有反爬拦截、SESUG/WUSS 现站无历年 proceedings 归档——如需补齐均须走 Wayback Machine。
 
-> **PharmaSUG China/Japan 源勘察(2026-08)**:区域会议的 proceedings 分散在不同路径、无统一导航入口。China 官网 pharmasug.com.cn 为 Vue SPA,后端 API 需鉴权(403),pharmasug.org 无 china2024/2025 页;2025 年会议页在 bagevent.com,议程无结构化论文列表。Japan 仅 pharmasug.org/proceedings/japan{year}/ 一条路径,部分年份对非浏览器 UA 返回 403。Lex Jansen 站聚合了部分 CN/JP 论文但本地 DNS 不可达——上述缺口需在 CI 环境经 Wayback Machine 补齐。
+> **PharmaSUG China/Japan 源勘察(2026-08 更新)**:China 官网 pharmasug.com.cn 为 Vue SPA,后端 `POST /api/general/v1/query-sug-with-sp.php`(procedureName=PSUG_SECTION_BYYEAR)现可匿名访问,PROCEEDINGS 分区含完整论文列表(编号/标题/作者/PDF 直链),spider 已接入,2023–2026 全量覆盖;2012–2022 旧年份仍经 Wayback/lexjansen 恢复。Japan 仅 pharmasug.org/proceedings/japan{year}/ 一条路径,部分年份对非浏览器 UA 返回 403。
 
 > **已知残留**:少量旧论文(主要为 SUGI/SGF 大体积 PDF)标题仍为占位符——本地网络对大文件下载存在截断,可在 GitHub Actions(CI)环境重跑 `repair_data.py` 补齐;另有约 350 条 lexjansen.com 链接在部分地区不可达,保留 Wayback 链接兜底。
 

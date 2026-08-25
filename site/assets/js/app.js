@@ -539,8 +539,16 @@
       const href = safeUrl(p.pdf_url || p.source_url);
       const tldr = (p.abstract || "").replace(/\s+/g, " ").trim();
       const tint = confTint(p.conference);
+      // snapshot consumed by the favorites module (star button)
+      const favData = esc(JSON.stringify({
+        id: p.id, title: p.title || "", authors: p.authors || [],
+        conference: p.conference || "", conference_name: p.conference_name || "",
+        section_name: p.section_name || "", region: p.region || "",
+        year: p.year || null, paper_code: p.paper_code || "",
+        pdf_url: p.pdf_url || "", source_url: p.source_url || "",
+      }));
       return `
-      <a class="paper-card tint-${tint}" href="${esc(href)}" target="_blank" rel="noopener" style="animation-delay:${Math.min(i * 25, 300)}ms">
+      <a class="paper-card tint-${tint}" data-fav="${favData}" href="${esc(href)}" target="_blank" rel="noopener" style="animation-delay:${Math.min(i * 25, 300)}ms">
         <div class="paper-title">${esc(p.title)}</div>
         ${p.authors && p.authors.length ? `<div class="paper-authors">${esc(p.authors.join("; "))}</div>` : ""}
         ${tldr ? `<div class="paper-tldr"><b>TLDR</b>${esc(tldr.slice(0, 220))}${tldr.length > 220 ? "…" : ""}</div>` : ""}
@@ -599,6 +607,8 @@
     $("#view-home").hidden = view !== "home";
     $("#view-browse").hidden = view !== "browse";
     $("#view-resources").hidden = view !== "resources";
+    const favView = $("#view-favorites"); // favorites module (optional view)
+    if (favView) favView.hidden = view !== "favorites";
     document.querySelectorAll("[data-nav]").forEach((a) =>
       a.classList.toggle("active", a.dataset.nav === view));
     document.title = view === "browse"
@@ -606,11 +616,16 @@
       : view === "resources"
         ? "Resources · ClinProc"
         : "ClinProc · Clinical Programming Conference Proceedings Index";
+    if (view === "favorites") document.title = "Favorites · ClinProc";
     window.scrollTo({ top: 0 });
   }
 
   function route() {
     const h = location.hash || "#/";
+    if (/^#\/favorites/.test(h)) { // favorites module renders its own content
+      showView("favorites");
+      return;
+    }
     if (/^#\/resources/.test(h)) {
       showView("resources");
       if (state.ready) renderResources();
@@ -736,7 +751,7 @@
 
     // keyboard: / focuses the visible search box
     document.addEventListener("keydown", (e) => {
-      const inputs = { home: $("#search"), browse: $("#search-browse"), resources: $("#search-resources") };
+      const inputs = { home: $("#search"), browse: $("#search-browse"), resources: $("#search-resources"), favorites: $("#search-favorites") };
       const active = inputs[state.view] || inputs.home;
       if (e.key === "/" && document.activeElement !== inputs.home && document.activeElement !== inputs.browse && document.activeElement !== inputs.resources) {
         e.preventDefault(); active.focus();

@@ -1,0 +1,22 @@
+[
+  {
+    "date": "2026-08-25",
+    "title": "Paper favorites & update history",
+    "tag": "feature",
+    "notes": [
+      "Star any paper card in the Browse view to save it — a Favorites view (#/favorites) groups saved papers by your own categories.",
+      "Favorites support categories, per-paper notes, keyword filtering, JSON export/import backups.",
+      "Favorites live in each visitor's own browser (localStorage): no account, no tracking, works for everyone who opens the site.",
+      "This Updates section is now generated from data/changelog.json."
+    ]
+  },
+  {
+    "date": "2026-08-20",
+    "title": "PharmaSUG China proceedings fully re-scraped",
+    "tag": "data",
+    "notes": [
+      "Reverse-engineered the official pharmasug.com.cn API and rebuilt the spider — PharmaSUG China grew from 460 to 758 papers (2012–2026).",
+      "2023–2026 editions now include full author lists and 292 direct PDF links from the official site."
+    ]
+  }
+]

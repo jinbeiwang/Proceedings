@@ -14,6 +14,8 @@
 ```
 
 - **静态站点**:`site/` 目录,纯 HTML + CSS + JS,用 [Lunr.js](https://lunrjs.com/) 做客户端全文检索,无需任何后端。
+- **论文收藏**:`favorites.js` 独立模块,访客可给论文打星收藏、自定义分类、加备注;数据存浏览器 localStorage(每台设备独立,支持 JSON 导出/导入备份),不依赖后端。
+- **更新历史**:首页 Updates 区块由 `site/data/changelog.json` 驱动,每次功能/数据更新手动追加一条。
 - **动态抓取**:`scraper/` 用 Python 从各会议官网抓取论文元数据。静态站本身不能"运行时抓取",因此通过 **GitHub Actions 定时**运行抓取脚本,更新 JSON 后自动重新部署——这是"静态站 + 每年自动更新"的标准模式。
 - **零成本**:全部托管在 GitHub Pages,免费、无需服务器或数据库。
 
@@ -40,10 +42,13 @@ proceedings/
 ├── site/                     # 静态网站
 │   ├── index.html
 │   ├── assets/css/style.css
-│   ├── assets/js/app.js
+│   ├── assets/js/app.js          # 主逻辑:视图路由/检索/筛选
+│   ├── assets/js/favorites.js    # 收藏模块(localStorage,独立自包含)
+│   ├── assets/js/changelog.js    # 首页更新历史时间线
 │   └── data/                 # 抓取生成的 JSON(由 scraper 写入)
 │       ├── papers.json
-│       └── conferences.json
+│       ├── conferences.json
+│       └── changelog.json        # 站点更新历史(手动维护)
 ├── .github/workflows/
 │   └── scrape-and-deploy.yml # 定时抓取 + 部署工作流
 └── README.md

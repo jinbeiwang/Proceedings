@@ -159,11 +159,12 @@ def main():
     merged.sort(key=lambda p: (p.get("conference", ""), p.get("year", 0),
                                p.get("paper_code", "")))
 
+    # 紧凑格式(无缩进): 显著减小文件体积,加快浏览器下载与解析
     papers_path.write_text(
-        json.dumps(merged, ensure_ascii=False, indent=1), encoding="utf-8"
+        json.dumps(merged, ensure_ascii=False, separators=(",", ":")), encoding="utf-8"
     )
     conf_path.write_text(
-        json.dumps(build_conferences_meta(merged), ensure_ascii=False, indent=1),
+        json.dumps(build_conferences_meta(merged), ensure_ascii=False, separators=(",", ":")),
         encoding="utf-8",
     )
 

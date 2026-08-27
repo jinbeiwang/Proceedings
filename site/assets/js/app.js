@@ -84,6 +84,9 @@
     p.title, (p.authors || []).join(" "), p.section_name, p.conference_name,
     p.paper_code, p.abstract,
   ].join(" ").toLowerCase());
+  // 字典序比较(比 localeCompare 快数十倍, 用于大列表排序;
+  // 中文标题按码点序, 对本站点英文为主的 title 排序足够)
+  const strCmp = (a, b) => (a < b ? -1 : a > b ? 1 : 0);
 
   function animateValue(el, end, duration = 900) {
     if (typeof end !== "number" || isNaN(end) || end === 0) {
@@ -134,12 +137,14 @@
       } catch { state.resources = []; }
       // stable tint per conference (index in conferences.json)
       state.confs.forEach((c, i) => { c.tint = i % 8; });
-      buildIndex();
+      // 先渲染首屏(统计/最新/会议卡片), 搜索索引推迟到空闲时构建:
+      // 避免 lunr 逐条 add 17k 条阻塞首屏白屏; 索引就绪前搜索走子串兜底。
       renderStats();
       renderTrending();
       renderConfGrid();
       state.ready = true;
       route();
+      scheduleIndexBuild();
     } catch (e) {
       console.error(e);
       $("#results-count").innerHTML =
@@ -172,6 +177,16 @@
         });
       }
     });
+  }
+
+  // ---- 首屏动画完成后构建索引(不阻塞首屏渲染) ----
+  function scheduleIndexBuild() {
+    if (typeof lunr === "undefined") return;
+    const run = () => { if (!state.idx) buildIndex(); };
+    // 延迟到首屏 count-up 动画(900ms)结束后再构建,
+    // 避免 2s+ 的同步索引构建阻塞 rAF 动画与首屏交互;
+    // 索引就绪前搜索自动走 haystack 子串兜底。
+    setTimeout(run, 1500);
   }
 
   // ---- search: AND-terms -> OR-terms -> substring fallback, plus code/phrase boosts ----
@@ -240,7 +255,7 @@
     const now = Date.now();
     const latest = [...state.papers]
       .filter((p) => p.added_at)
-      .sort((a, b) => b.added_at.localeCompare(a.added_at))
+      .sort((a, b) => strCmp(b.added_at, a.added_at))
       .slice(0, 6);
     if (!latest.length) { box.closest(".trending").style.display = "none"; return; }
     $("#trending-sub").textContent = `last updated ${latest[0].added_at.slice(0, 10)}`;
@@ -485,13 +500,13 @@
     if (sort === "relevance" && search && search.scores) {
       list.sort((a, b) => scoreOf(b, search) - scoreOf(a, search));
     } else if (sort === "relevance") {
-      list.sort((a, b) => (b.year || 0) - (a.year || 0) || a.title.localeCompare(b.title));
+      list.sort((a, b) => (b.year || 0) - (a.year || 0) || strCmp(a.title, b.title));
     } else if (sort === "year-desc") {
-      list.sort((a, b) => (b.year || 0) - (a.year || 0) || a.title.localeCompare(b.title));
+      list.sort((a, b) => (b.year || 0) - (a.year || 0) || strCmp(a.title, b.title));
     } else if (sort === "year-asc") {
-      list.sort((a, b) => (a.year || 0) - (b.year || 0) || a.title.localeCompare(b.title));
+      list.sort((a, b) => (a.year || 0) - (b.year || 0) || strCmp(a.title, b.title));
     } else if (sort === "title") {
-      list.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
+      list.sort((a, b) => strCmp(a.title || "", b.title || ""));
     }
 
     renderResults(list, q, search);

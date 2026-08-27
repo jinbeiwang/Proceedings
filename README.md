@@ -37,7 +37,12 @@ proceedings/
 │   │   ├── rpharma.py        # R/Pharma(已实现)
 │   │   ├── mwsug.py          # MWSUG(已实现,2025 起)
 │   │   ├── sasinnovate.py    # SAS Innovate(已实现,SGF 继任会议,GitHub 托管)
-│   │   └── pharmasug_jp.py   # PharmaSUG Japan(已实现,2023/2025 直连)
+│   │   ├── pharmasug_jp.py   # PharmaSUG Japan(已实现,2023/2025 直连)
+│   │   ├── psi.py            # PSI(已实现,官网摘要页 + PDF 首页提取标题/作者)
+│   │   ├── cdisc.py          # CDISC Interchange(已实现,cdisc.org 演示归档)
+│   │   ├── pharmarug.py      # PharmaRUG China(已实现,GitHub Pages 官网)
+│   │   ├── userconf.py       # useR!(已实现,2022/2025 官网 program 页)
+│   │   └── rmedicine.py      # R/Medicine(已实现,RConsortium GitHub Pages)
 │   └── requirements.txt
 ├── site/                     # 静态网站
 │   ├── index.html
@@ -133,7 +138,7 @@ python -m http.server 8765
 
 ## 当前覆盖情况
 
-约 **15,900 篇**,年份 1976–2026:
+约 **17,200 篇**,年份 1976–2026:
 
 | 会议 | 状态 | 说明 |
 |---|---|---|
@@ -146,7 +151,12 @@ python -m http.server 8765
 | PHUSE EU / US / APAC / CSS | ✅ 已实现 | |
 | R/Pharma | ✅ 已实现 | |
 | MWSUG | ✅ 已实现 | 现站仅托管 2025 起;无 PDF 直链,收录标题/作者/摘要 |
-| 其余 ~13 个会议 | 🔲 已注册 | 见 `models.py` CONFERENCES,待逐步补 spider |
+| CDISC Interchange(2023–) | ✅ 已实现 | cdisc.org 官方 "Interchange Presentations" 归档(23 届:US/EU/日本/中国/印度/韩国),含 190 条 PDF 直链 |
+| useR!(2022/2025) | ✅ 已实现 | 官网 program 页直抓;2025 页为 base64 编码的 gt 表格(已解码),含摘要与讲者 |
+| R/Medicine(2024–) | ✅ 已实现 | RConsortium GitHub Pages:Program 表格 + abstracts/workshops 页摘要 |
+| PSI(2025–) | ✅ 已实现 | psiweb.org individual abstracts 页;真实标题/作者从官方 PDF 首页提取(pypdf) |
+| PharmaRUG China(2023–) | ✅ 已实现 | pharmarug.github.io 官方 GitHub Pages,含 slides(pptx/pdf)直链 |
+| 其余 ~8 个会议 | 🔲 已注册 | 见 `models.py` CONFERENCES,待逐步补 spider |
 
 > **新会议源勘察结论(2026-08)**:posit::conf 与 SAS Explore 均无公开 PDF proceedings(以演讲/视频为主),不适合本索引模式;区域 SUG 中 NESUG 站点不可达、SCSUG 有反爬拦截、SESUG/WUSS 现站无历年 proceedings 归档——如需补齐均须走 Wayback Machine。
 

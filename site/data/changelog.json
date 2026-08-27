@@ -1,5 +1,18 @@
 [
   {
+    "date": "2026-08-27",
+    "title": "Five new conferences: PSI, CDISC Interchange, PharmaRUG China, useR!, R/Medicine",
+    "tag": "data",
+    "notes": [
+      "PSI (2025–2026): 146 conference abstracts from psiweb.org, with official PDF links — titles and authors are extracted from the PDFs themselves.",
+      "CDISC Interchange (2023–2026): 784 presentations from the official cdisc.org presentation archives across US, Europe, Japan, China, India and Korea editions.",
+      "PharmaRUG China (2023–2026): 57 talks from the official pharmarug.github.io site, with slides links.",
+      "useR! (2022 & 2025): 250 talks with abstracts and presenters from the official conference websites.",
+      "R/Medicine (2024–2025): 107 talks with abstracts from the R Consortium GitHub Pages site.",
+      "All five spiders run from official sources, so monthly scheduled scrapes will pick up new editions automatically."
+    ]
+  },
+  {
     "date": "2026-08-25",
     "title": "Paper favorites & update history",
     "tag": "feature",

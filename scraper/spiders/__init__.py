@@ -8,6 +8,11 @@ from .pharmasug_cn import PharmaSUGChinaSpider
 from .pharmasug_jp import PharmaSUGJapanSpider
 from .mwsug import MWSUGSpider
 from .sasinnovate import SASInnovateSpider
+from .psi import PSISpider
+from .cdisc import CDISCInterchangeSpider
+from .pharmarug import PharmaRugSpider
+from .userconf import UserConfSpider
+from .rmedicine import RMedicineSpider
 
 # 会议代码 -> spider 类。main.py 据此调度。
 SPIDERS = {
@@ -24,4 +29,9 @@ SPIDERS = {
     "mwsug": MWSUGSpider,
     "sas-innovate": SASInnovateSpider,
     "pharmasug-jp": PharmaSUGJapanSpider,
+    "psi": PSISpider,
+    "cdisc-interchange": CDISCInterchangeSpider,
+    "pharmarug-cn": PharmaRugSpider,
+    "user-r": UserConfSpider,
+    "r-medicine": RMedicineSpider,
 }

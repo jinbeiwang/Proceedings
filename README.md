@@ -2,6 +2,8 @@
 
 一个**纯静态、零服务器**的会议论文索引站,汇总 PharmaSUG、PHUSE、SAS Global Forum、R/Pharma 等临床编程会议论文,支持按会议 / 年份 / 主题分类浏览与全文检索。
 
+**在线阅读**:<https://jinbeiwang.github.io/Proceedings/>
+
 灵感来自已离线的 [Lex Jansen](https://www.lexjansen.com/) 索引站,参考了 [clinyun.com/ppi](https://www.clinyun.com/ppi/) 与 [clinstandards.org](https://www.clinstandards.org/) 的资源组织方式。
 
 ## 工作原理
